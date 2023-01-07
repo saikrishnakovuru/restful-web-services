@@ -14,7 +14,7 @@ public class HelloWorldController {
 	@Autowired
 	private MessageSource messageSource;
 
-	@GetMapping("/hello-world")
+	@GetMapping("/helloworld")
 	public String helloWorld() {
 		return "Hello world";
 	}
