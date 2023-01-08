@@ -1,14 +1,18 @@
 package com.in28minutes.springboot.restfulwedservices.user;
 
 import java.time.LocalDate;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Past;
 
-@Entity(name="user_details")
+@Entity(name = "user_details")
 public class User {
 
 	@Id
@@ -20,13 +24,17 @@ public class User {
 	@Past(message = "birth date sohuld always be past")
 	private LocalDate birthDate;
 
+	@OneToMany(mappedBy = "user")
+	@JsonIgnore
+	private List<Post> posts;
+
 	public User(int id, String name, LocalDate birthDate) {
 		this.id = id;
 		this.name = name;
 		this.birthDate = birthDate;
 	}
 
-	public User() {
+	protected User() {
 	}
 
 	public Integer getId() {
@@ -56,6 +64,14 @@ public class User {
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", name=" + name + ", birthDate=" + birthDate + "]";
+	}
+
+	public List<Post> getPosts() {
+		return posts;
+	}
+
+	public void setPosts(List<Post> posts) {
+		this.posts = posts;
 	}
 
 }

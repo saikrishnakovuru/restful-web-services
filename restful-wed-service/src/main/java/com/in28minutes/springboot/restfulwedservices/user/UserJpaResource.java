@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.in28minutes.springboot.restfulwedservices.jpa.PostReposetory;
 import com.in28minutes.springboot.restfulwedservices.jpa.UserReposetory;
 
 import jakarta.validation.Valid;
@@ -27,6 +28,8 @@ public class UserJpaResource {
 
 	@Autowired
 	private UserReposetory userRepo;
+	@Autowired
+	private PostReposetory postRepo;
 
 	@GetMapping("/jpa/users")
 	public List<User> retriveAllUsers() {
@@ -57,17 +60,33 @@ public class UserJpaResource {
 
 	@DeleteMapping("/jpa/users/{userId}")
 	public void deleteUser(@PathVariable int userId) {
-//		User user = 
-				userRepo.deleteById(userId);
-//		if (user == null)
-//			throw new UserNotFoundException("user: " + userId);
+		userRepo.deleteById(userId);
 	}
 
-//	@GetMapping("/users/{userId}")
-//	public User RetriveUser(@PathVariable int userId) {
-//		User user = userDaoService.retriveUserById(userId);
-//		if (user == null)
-//			throw new UserNotFoundException("user: " + userId);
-//		return user;
-//	}
+	@GetMapping("/jpa/users/{userId}/posts")
+	public List<Post> retrivePostsForAnUser(@PathVariable int userId) {
+		Optional<User> user = userRepo.findById(userId);
+		if (user == null)
+			throw new UserNotFoundException("user: " + userId);
+
+		return user.get().getPosts();
+	}
+
+	@PostMapping("/jpa/users/{id}/posts")
+	public ResponseEntity<Object> createPostForUser(@PathVariable int id, @Valid @RequestBody Post post) {
+		Optional<User> user = userRepo.findById(id);
+
+		if (user.isEmpty())
+			throw new UserNotFoundException("id:" + id);
+
+		post.setUser(user.get());
+
+		Post savedPost = postRepo.save(post);
+
+		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedPost.getId())
+				.toUri();
+
+		return ResponseEntity.created(location).build();
+
+	}
 }
