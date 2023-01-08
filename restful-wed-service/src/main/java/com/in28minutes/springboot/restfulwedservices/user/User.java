@@ -2,14 +2,22 @@ package com.in28minutes.springboot.restfulwedservices.user;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Past;
 
+@Entity(name="user_details")
 public class User {
+
+	@Id
+	@GeneratedValue
 	private Integer id;
+
 	@NotEmpty(message = "name can never be left empty")
 	private String name;
-	@Past(message="birth date sohuld always be past")
+	@Past(message = "birth date sohuld always be past")
 	private LocalDate birthDate;
 
 	public User(int id, String name, LocalDate birthDate) {
